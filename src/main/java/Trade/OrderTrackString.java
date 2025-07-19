@@ -14,7 +14,7 @@ public class OrderTrackString {
 
         this.msgDate = new Date();
         this.status = status;
-        this.msg = "";
+        this.msg = msg;
     }
 
     @Override

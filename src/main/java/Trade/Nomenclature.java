@@ -199,7 +199,6 @@ public class Nomenclature {
                 .limit(quantity)
                 .toList();
 
-        System.out.println(selectedList);
         return selectedList;
     }
 

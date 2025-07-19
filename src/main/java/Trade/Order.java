@@ -139,6 +139,7 @@ public class Order {
 
     public static void addGoods(Order obj, Depo depo) {
         final String NUMBER_PALLET = "0123456789.";
+        final int QUANTITY_RECOMENDS = 3;
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Выберите товары");
@@ -146,6 +147,12 @@ public class Order {
         System.out.println("Для завешения введите пустую строку");
         for (int i = 0; i < depo.nomenclatureList.size(); i++) {
             System.out.println((i + 1) + ". " + depo.nomenclatureList.get(i));
+        }
+
+        List recomendation = Nomenclature.getRecomendation(depo, QUANTITY_RECOMENDS);
+        System.out.println("РЕКОМЕНДУЕМ ОБРАТИТЬ ВНИМАНИЕ:");
+        for (int i = 0; i < recomendation.size(); i++) {
+            System.out.println((depo.nomenclatureList.indexOf(recomendation.get(i)) + 1) + ". " + recomendation.get(i));
         }
 
         while (true) {
@@ -179,7 +186,9 @@ public class Order {
 
             float quantityScaned = Float.parseFloat(sb.toString());
             try {
-                obj.addOrderString((Nomenclature) depo.nomenclatureList.get(position - 1), quantityScaned);
+                if (quantityScaned > 0) {
+                    obj.addOrderString((Nomenclature) depo.nomenclatureList.get(position - 1), quantityScaned);
+                }
             } catch (Exception ex) {
                 System.out.println("Ошибка");
                 System.out.println(ex.getMessage());

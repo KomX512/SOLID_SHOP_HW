@@ -66,7 +66,7 @@ public class Menu {
         System.out.println("Меню заказы:");
         System.out.println("1. Создать заказ");
         System.out.println("2. Выбрать заказ по номеру...");
-        System.out.println("3. Список заказов по дате");
+
         String choise = sc.nextLine();
         try {
             if (choise.toLowerCase().equals(END_MARKER)) {

@@ -16,7 +16,6 @@ public class Main {
         //Действия по меню
         final int NEW_ORDER = 11;
         final int ORDER_BY_NUMBER = 12;
-        final int ORDERS_BY_DATE = 13;
 
         final int ALL_GOODS = 21;
         final int FILTER_GOODS = 22;
@@ -49,9 +48,6 @@ public class Main {
                         Order.orderOperations(findedOrder, depo);
                     }
                     break;
-                case ORDERS_BY_DATE:
-                    System.out.println("Under Construction");
-                    break;
                 case ALL_GOODS:
                     Nomenclature.printAllGoods(depo.nomenclatureList);
                     break;
@@ -79,7 +75,6 @@ public class Main {
         Nomenclature current;
         for (int i = 0; i < nomenclatureList.size(); i++) {
             current = (Nomenclature) nomenclatureList.get(i);
-            System.out.println(nomenclatureList.get(i));
             if (!brandList.contains(current.getBrand())) {
                 brandList.add(current.getBrand());
             }

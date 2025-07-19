@@ -3,6 +3,7 @@ package Trade;
 import Service.Useful;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Nomenclature {
     public String name;
@@ -165,6 +166,41 @@ public class Nomenclature {
         depo.ratingMap.entrySet().stream()
                 .sorted(Map.Entry.<Nomenclature, Integer>comparingByValue().reversed())
                 .forEach(System.out::println);
+    }
+
+    public static List getBestRating(Depo depo, int quantity) {
+
+        List operationList = depo.ratingMap.entrySet().stream()
+                .sorted(Map.Entry.<Nomenclature, Integer>comparingByValue().reversed())
+                .map(m -> m.getKey())
+                .limit(quantity)
+                .collect(Collectors.toList());
+
+        return operationList;
+    }
+
+    public static List getPoorRating(Depo depo, int quantity) {
+
+        List operationList = depo.ratingMap.entrySet().stream()
+                .sorted(Map.Entry.<Nomenclature, Integer>comparingByValue())
+                .map(m -> m.getKey())
+                .limit(quantity)
+                .collect(Collectors.toList());
+
+        return operationList;
+    }
+
+    public static List getRecomendation(Depo depo, int quantity) {
+
+        List bestList = getBestRating(depo, depo.nomenclatureList.size() - quantity);
+
+        List selectedList = (List) depo.nomenclatureList.stream()
+                .filter(nom -> !bestList.contains(nom))
+                .limit(quantity)
+                .toList();
+
+        System.out.println(selectedList);
+        return selectedList;
     }
 
     public static void builder(Depo depo) {

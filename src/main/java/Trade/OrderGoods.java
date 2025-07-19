@@ -13,17 +13,17 @@ public class OrderGoods {
         this.summ = getSumm(quantity, price);
     }
 
-    public void changePrice(float newPrice){
+    public void changePrice(float newPrice) {
         this.price = newPrice;
         this.summ = getSumm(this.quantity, newPrice);
     }
 
-    public void addQuantity(float addingQuantity){
+    public void addQuantity(float addingQuantity) {
         this.quantity = this.quantity + addingQuantity;
-        this.summ = getSumm(this.quantity , this.price);
+        this.summ = getSumm(this.quantity, this.price);
     }
 
-    public void changeQuantity(float newQuantity){
+    public void changeQuantity(float newQuantity) {
         this.quantity = newQuantity;
         this.summ = getSumm(newQuantity, this.price);
     }
@@ -36,15 +36,15 @@ public class OrderGoods {
         return quantity * price;
     }
 
-    public float getQuantity(){
+    public float getQuantity() {
         return quantity;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         final String SPACE = "                                                    ";
         StringBuilder sb = new StringBuilder();
-        sb.append((nomenclature.toString() + SPACE).substring(0, 50) );
+        sb.append((nomenclature.toString() + SPACE).substring(0, 50));
         sb.append(" | ");
         sb.append(quantity);
         sb.append(" | ");

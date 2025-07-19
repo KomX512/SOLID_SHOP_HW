@@ -2,6 +2,7 @@
 import Service.FileOperations;
 import Service.Menu;
 import Trade.Brand;
+import Trade.Depo;
 import Trade.Nomenclature;
 import Trade.Order;
 
@@ -23,18 +24,16 @@ public class Main {
         final int NEW_NOM = 24;
         final int ADD_BRAND = 25;
         //---------------------------------
-        List nomenclatureList = new ArrayList();
-        List ordersList = new ArrayList();
-        Map ratingMap = new TreeMap();
+        Depo depo = Depo.getInstance();
 
-        fillDefaultNomenclature(nomenclatureList);
-        List brandList = fillBrandList(nomenclatureList);
+        fillDefaultNomenclature(depo.nomenclatureList);
+        depo.brandList = fillBrandList(depo.nomenclatureList);
 
         boolean repeat = true;
         while (repeat) {
 
             int choice = Menu.MainMenu();
-            if (choice == END_MARKER){
+            if (choice == END_MARKER) {
                 repeat = false;
                 System.out.println("Выход из программы...");
                 break;
@@ -42,35 +41,34 @@ public class Main {
 
             switch (choice) {
                 case NEW_ORDER:
-                    Order.buildNewOrder(nomenclatureList, ordersList, ratingMap);
+                    Order.buildNewOrder(depo, null);
                     break;
                 case ORDER_BY_NUMBER:
-                    Order findedOrder = Order.findOrderByNumber(ordersList);
-                    if (findedOrder != null){
-                        Order.orderOperations(findedOrder);
+                    Order findedOrder = Order.findOrderByNumber(depo.ordersList);
+                    if (findedOrder != null) {
+                        Order.orderOperations(findedOrder, depo);
                     }
                     break;
                 case ORDERS_BY_DATE:
                     System.out.println("Under Construction");
                     break;
                 case ALL_GOODS:
-                    Nomenclature.printAllGoods(nomenclatureList);
+                    Nomenclature.printAllGoods(depo.nomenclatureList);
                     break;
                 case FILTER_GOODS:
-                    Nomenclature.filterAndPrintGoods(nomenclatureList, brandList);
+                    Nomenclature.filterAndPrintGoods(depo);
                     break;
                 case GOODS_RATING:
-                    Nomenclature.goodsRating(ratingMap);
+                    Nomenclature.goodsRating(depo);
                     break;
                 case NEW_NOM:
-                    Nomenclature.builder(nomenclatureList, brandList);
+                    Nomenclature.builder(depo);
                     break;
                 case ADD_BRAND:
-                    Brand.builder(brandList);
+                    Brand.builder(depo);
                     break;
                 default:
                     System.out.println("Не верно выбрана операция");
-
             }
             choice = 0;
         }

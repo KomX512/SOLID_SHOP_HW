@@ -7,8 +7,6 @@ import java.util.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static Trade.OrderStatus.ON_DELIVERY;
-
 public class Order {
     private static final AtomicInteger COUNTER = new AtomicInteger(1);
     protected int number;
@@ -19,6 +17,7 @@ public class Order {
     protected float summ;
     protected List orderGoods;
     protected String comment;
+    protected List orderTrack;
 
     public Order() {
 
@@ -28,6 +27,7 @@ public class Order {
         this.weigh = 0;
         this.summ = 0;
         this.orderGoods = new ArrayList();
+        this.orderTrack = new ArrayList();
         this.comment = "";
     }
 
@@ -45,6 +45,7 @@ public class Order {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+        this.setNewTrack("Новый статус!");
     }
 
     public String getAddress() {
@@ -57,6 +58,19 @@ public class Order {
 
     public String getComment() {
         return comment;
+    }
+
+    public List getOrderGoods() {
+        return orderGoods;
+    }
+
+    public List getOrderTrack() {
+        return orderTrack;
+    }
+
+    public void setNewTrack(String msg) {
+        OrderTrackString newTrackString = new OrderTrackString(this.status, msg);
+        this.orderTrack.add(newTrackString);
     }
 
     public void addOrderString(Nomenclature nomenclature, float quantity) {
@@ -86,16 +100,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Заказ № " + number + " от " + dateToString(date);
-    }
-
-    private String dateToString(Date date) {
-        return twoDigitsStr(date.getDate()) + "." + twoDigitsStr(date.getMonth()) + "." + (date.getYear() + 1900);
-    }
-
-    private String twoDigitsStr(int source) {
-        String result = "0" + String.valueOf(source);
-        return result.substring(result.length() - 2, result.length());
+        return "Заказ № " + number + " от " + Useful.dateToString(date, false);
     }
 
     public void printOrder() {
@@ -132,15 +137,15 @@ public class Order {
         return (Order) conscripts.get(0);
     }
 
-    public static void addGoods(Order obj, List nomenclatureList) {
+    public static void addGoods(Order obj, Depo depo) {
         final String NUMBER_PALLET = "0123456789.";
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Выберите товары");
         System.out.println("Позиция [ПРОБЕЛ] количество");
         System.out.println("Для завешения введите пустую строку");
-        for (int i = 0; i < nomenclatureList.size(); i++) {
-            System.out.println((i + 1) + ". " + nomenclatureList.get(i));
+        for (int i = 0; i < depo.nomenclatureList.size(); i++) {
+            System.out.println((i + 1) + ". " + depo.nomenclatureList.get(i));
         }
 
         while (true) {
@@ -174,7 +179,7 @@ public class Order {
 
             float quantityScaned = Float.parseFloat(sb.toString());
             try {
-                obj.addOrderString((Nomenclature) nomenclatureList.get(position - 1), quantityScaned);
+                obj.addOrderString((Nomenclature) depo.nomenclatureList.get(position - 1), quantityScaned);
             } catch (Exception ex) {
                 System.out.println("Ошибка");
                 System.out.println(ex.getMessage());
@@ -182,7 +187,7 @@ public class Order {
         }
     }
 
-    public static void buildNewOrder(List nomenclatureList, List ordersList, Map ratingMap) {
+    public static void buildNewOrder(Depo depo, Order donorOrder) {
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Адрес доставки");
@@ -194,7 +199,15 @@ public class Order {
 
         Order newOrder = new Order();
         newOrder.setAddress(address);
-        addGoods(newOrder, nomenclatureList);
+        if (donorOrder == null) {
+            addGoods(newOrder, depo);
+        } else {
+            List currentList = donorOrder.getOrderGoods();
+            for (int i = 0; i < currentList.size(); i++) {
+                OrderGoods currentPosition = (OrderGoods) currentList.get(i);
+                newOrder.addOrderString(currentPosition.getNomenclature(), currentPosition.getQuantity());
+            }
+        }
 
         for (int i = 0; i < newOrder.orderGoods.size(); i++) {
             OrderGoods current = (OrderGoods) newOrder.orderGoods.get(i);
@@ -202,16 +215,25 @@ public class Order {
             newOrder.weigh = newOrder.weigh + current.getNomenclature().getWeight() * current.getQuantity();
         }
 
+        newOrder.setNewTrack("Создан заказ");
         newOrder.printOrder();
-        ordersList.add(newOrder);
+        depo.ordersList.add(newOrder);
+
     }
 
-    public static void orderOperations(Order currentOrder) {
+    public void copyOrder(Depo depo) {
+        System.out.println("Копируем заказ " + this);
+        buildNewOrder(depo, this);
+    }
+
+    public static void orderOperations(Order currentOrder, Depo depo) {
         Scanner sc = new Scanner(System.in);
         System.out.println("1. Смотреть заказ");
         System.out.println("2. Изменить адрес доставки");
         System.out.println("3. Изменить статус");
         System.out.println("4. Возврат заказа");
+        System.out.println("5. Повторить заказ");
+        System.out.println("6. Трэк-лист заказа");
 
         int ch = Useful.scanInt();
         switch (ch) {
@@ -223,25 +245,68 @@ public class Order {
                     System.out.println("Новый адрес");
                     String newAdress = sc.nextLine();
                     currentOrder.setAddress(newAdress);
+                    currentOrder.setNewTrack("Замена адрес доставки");
                 } else {
                     System.out.println("Уже нельзя заменить адрес...");
                 }
                 break;
             case 3:
+                if (currentOrder.getStatus() == OrderStatus.COMPLETED || currentOrder.getStatus() == OrderStatus.CANCELED) {
+                    System.out.println("У заверешнных и отмененных заказов нельзя менять статус...");
+                    break;
+                }
                 changeStatus(currentOrder);
+                if (currentOrder.getStatus() == OrderStatus.COMPLETED) {
+                    currentOrder.ratintOperations(depo, OrderStatus.COMPLETED);
+                }
                 break;
             case 4:
-                currentOrder.setStatus(OrderStatus.CANCELED);
-                //Прописать опреации по рейтингу
+                if (currentOrder.getStatus() != OrderStatus.CANCELED) {
+                    currentOrder.setStatus(OrderStatus.CANCELED);
+                    currentOrder.setNewTrack("Отмена заказа из меню отмены");
+                    currentOrder.ratintOperations(depo, OrderStatus.CANCELED);
+                }
+
+                break;
+            case 5:
+                currentOrder.copyOrder(depo);
+                break;
+            case 6:
+                currentOrder.printOrderTrackList();
                 break;
             default:
                 System.out.println("Неизвествная операция");
-
         }
+    }
+
+    public void ratintOperations(Depo depo, OrderStatus orderStatus) {
+        final int СOMPLED_RATING = 1;
+        final int CANCELED_RATING = -1;
+
+        List currentOrderGoods = this.getOrderGoods();
+
+        for (int i = 0; i < currentOrderGoods.size(); i++) {
+            OrderGoods current = (OrderGoods) currentOrderGoods.get(i);
+            int mode = (orderStatus == OrderStatus.CANCELED ? CANCELED_RATING : СOMPLED_RATING);
+            int value = 0;
+            if (depo.ratingMap.containsKey(current.getNomenclature())) {
+                value = depo.ratingMap.get(current.getNomenclature()) + mode * (int) current.getQuantity();
+            } else {
+                value = mode * (int) current.getQuantity();
+            }
+            depo.ratingMap.put(current.getNomenclature(), value);
+        }
+    }
+
+    public void printOrderTrackList() {
+        orderTrack.forEach((value) -> {
+            System.out.println(value);
+        });
     }
 
     private static void changeStatus(Order currentOrder) {
 
+        System.out.println(currentOrder);
         System.out.println("1. " + OrderStatus.IN_WORK);
         System.out.println("2. " + OrderStatus.ON_SHIPMENT);
         System.out.println("3. " + OrderStatus.ON_THE_WAY);
@@ -263,8 +328,8 @@ public class Order {
                 break;
             case 5:
                 currentOrder.setStatus(OrderStatus.COMPLETED);
+
                 break;
         }
-
     }
 }

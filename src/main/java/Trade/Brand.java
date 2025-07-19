@@ -27,14 +27,14 @@ public class Brand {
         return name.equals(ob.name);
     }
 
-    public static void builder(List brandList) {
+    public static void builder(Depo depo) {
         Scanner sc = new Scanner(System.in);
         System.out.print("Название бренда:");
         String newName = sc.nextLine();
         Brand newBrand = new Brand(newName);
 
-        if (!brandList.contains(newBrand)) {
-            brandList.add(newBrand);
+        if (!depo.brandList.contains(newBrand)) {
+            depo.brandList.add(newBrand);
             System.out.println("Брэнд " + newBrand + " создан");
         }
     }

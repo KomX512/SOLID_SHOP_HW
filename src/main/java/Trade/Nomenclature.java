@@ -2,10 +2,7 @@ package Trade;
 
 import Service.Useful;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class Nomenclature {
     public String name;
@@ -72,7 +69,7 @@ public class Nomenclature {
 
     @Override
     public String toString() {
-        StringBuilder sb  = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(name);
         if (brand != null) {
             sb.append(" [" + brand.name + "]");
@@ -85,7 +82,7 @@ public class Nomenclature {
         return sb.toString();
     }
 
-    public void fullCardPrint(){
+    public void fullCardPrint() {
         System.out.println(name);
         System.out.println("Артикул: " + articul);
         System.out.println("Брэнд: " + brand);
@@ -93,6 +90,7 @@ public class Nomenclature {
         System.out.println("Вес единицы: " + weight);
         System.out.println("Цена: " + price);
     }
+
     public static void printAllGoods(List nomenclatureList) {
 
         nomenclatureList.forEach((value) -> {
@@ -101,7 +99,7 @@ public class Nomenclature {
 
     }
 
-    public static void filterAndPrintGoods(List nomenclatureList, List brandList) {
+    public static void filterAndPrintGoods(Depo depo) {
 
         Scanner sc = new Scanner(System.in);
 
@@ -119,7 +117,7 @@ public class Nomenclature {
                 System.out.print("Ключевое слово:");
                 String keyWord = sc.nextLine();
 
-                conscripts = nomenclatureList.stream()
+                conscripts = depo.nomenclatureList.stream()
                         .filter(nomenclature -> ((Nomenclature) nomenclature).getName().toLowerCase().contains(keyWord.toLowerCase()))
                         .toList();
 
@@ -129,7 +127,7 @@ public class Nomenclature {
                 System.out.print("Цена:");
                 priceFilter = Useful.scanFloat();
                 final float filterMax = priceFilter;
-                conscripts = nomenclatureList.stream()
+                conscripts = depo.nomenclatureList.stream()
                         .filter(nomenclature -> ((Nomenclature) nomenclature).getPrice() <= filterMax)
                         .toList();
                 printAllGoods(conscripts);
@@ -138,20 +136,20 @@ public class Nomenclature {
                 System.out.print("Цена:");
                 priceFilter = Useful.scanFloat();
                 final float filterMin = priceFilter;
-                conscripts = nomenclatureList.stream()
+                conscripts = depo.nomenclatureList.stream()
                         .filter(nomenclature -> ((Nomenclature) nomenclature).getPrice() >= filterMin)
                         .toList();
                 printAllGoods(conscripts);
                 break;
             case 4: //Фильтр по Брэнду
 
-                for (int i = 0; i < brandList.size(); i++) {
-                    System.out.println((i + 1) + ". " + brandList.get(i));
+                for (int i = 0; i < depo.brandList.size(); i++) {
+                    System.out.println((i + 1) + ". " + depo.brandList.get(i));
                 }
                 int chBr = Useful.scanInt();
                 if (chBr > 0) {
-                    Brand brandFilter = (Brand) brandList.get(ch - 1);
-                    conscripts = nomenclatureList.stream()
+                    Brand brandFilter = (Brand) depo.brandList.get(ch - 1);
+                    conscripts = depo.nomenclatureList.stream()
                             .filter(nomenclature -> ((Nomenclature) nomenclature).getBrand().equals(brandFilter))
                             .toList();
                     printAllGoods(conscripts);
@@ -162,14 +160,14 @@ public class Nomenclature {
         }
     }
 
-    public static void goodsRating(Map ratingMap) {
+    public static void goodsRating(Depo depo) {
 
-        for (int i = 0; i < ratingMap.size(); i++) {
-            System.out.println(ratingMap.get(i));
-        }
+        depo.ratingMap.entrySet().stream()
+                .sorted(Map.Entry.<Nomenclature, Integer>comparingByValue().reversed())
+                .forEach(System.out::println);
     }
 
-    public static void builder(List nomenclatureList, List brandList) {
+    public static void builder(Depo depo) {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Новая номенклатура");
@@ -178,8 +176,8 @@ public class Nomenclature {
         System.out.print("Артикул:");
         String articul = sc.nextLine();
         boolean breakFlag = false;
-        for (int i = 0; i < nomenclatureList.size(); i++) {
-            Nomenclature currentNom = (Nomenclature) nomenclatureList.get(i);
+        for (int i = 0; i < depo.nomenclatureList.size(); i++) {
+            Nomenclature currentNom = (Nomenclature) depo.nomenclatureList.get(i);
             if (currentNom.name.equals(newName)) {
                 System.out.println("Уже есть такое наименование...");
                 breakFlag = true;
@@ -201,28 +199,28 @@ public class Nomenclature {
 
         System.out.println("Выберите Брэнд:");
 
-        for (int i = 0; i < brandList.size(); i++) {
-            System.out.println((i + 1) + ". " + brandList.get(i));
+        for (int i = 0; i < depo.brandList.size(); i++) {
+            System.out.println((i + 1) + ". " + depo.brandList.get(i));
         }
         int chBr = Useful.scanInt();
         if (chBr > 0) {
-            Brand brand = (Brand) brandList.get(chBr - 1);
+            Brand brand = (Brand) depo.brandList.get(chBr - 1);
             novaObj.setBrand(brand.name);
         }
 
         System.out.println("Единица измерения:");
         int measureIndex = 0;
         Measure[] measureArray = new Measure[Measure.values().length];
-        for (Measure current: Measure.values()) {
-           System.out.println((measureIndex + 1) + ". " + current);
-           measureArray[measureIndex] = current;
-           measureIndex++;
+        for (Measure current : Measure.values()) {
+            System.out.println((measureIndex + 1) + ". " + current);
+            measureArray[measureIndex] = current;
+            measureIndex++;
         }
 
         int chMs = Useful.scanInt();
         if (chMs > 0) {
-            novaObj.setMeasure(measureArray[chMs-1].toString());
-            System.out.println(measureArray[chMs-1]);
+            novaObj.setMeasure(measureArray[chMs - 1].toString());
+            System.out.println(measureArray[chMs - 1]);
         }
         System.out.println("Введите вес:");
 
@@ -236,7 +234,7 @@ public class Nomenclature {
 
         System.out.println("Введена новая номенклатура: ");
         novaObj.fullCardPrint();
-        nomenclatureList.add(novaObj);
+        depo.nomenclatureList.add(novaObj);
 
     }
 

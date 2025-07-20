@@ -5,7 +5,7 @@ import Service.Useful;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Nomenclature {
+public class Nomenclature implements Print {
     public String name;
     private String articul;
     private Brand brand;
@@ -83,7 +83,8 @@ public class Nomenclature {
         return sb.toString();
     }
 
-    public void fullCardPrint() {
+    @Override
+    public void printObject() {
         System.out.println(name);
         System.out.println("Артикул: " + articul);
         System.out.println("Брэнд: " + brand);
@@ -268,7 +269,7 @@ public class Nomenclature {
         novaObj.setPrice(newPrice);
 
         System.out.println("Введена новая номенклатура: ");
-        novaObj.fullCardPrint();
+        novaObj.printObject();
         depo.nomenclatureList.add(novaObj);
 
     }

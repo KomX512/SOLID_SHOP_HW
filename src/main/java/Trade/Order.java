@@ -7,20 +7,16 @@ import java.util.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Order extends Documents {
+public class Order extends Documents implements Print{
     private static final AtomicInteger COUNTER = new AtomicInteger(1);
-//    protected int number;
-//    protected Date date;
     protected OrderStatus status;
     protected String address;
     protected float weigh;
     protected float summ;
     protected List orderGoods;
-   // protected String comment;
     protected List orderTrack;
 
     public Order() {
-
         this.date = new Date();
         this.number = COUNTER.getAndIncrement();
         this.status = OrderStatus.NEW;
@@ -103,7 +99,8 @@ public class Order extends Documents {
         return "Заказ № " + number + " от " + Useful.dateToString(date, false);
     }
 
-    public void printOrder() {
+    @Override
+    public void printObject() {
 
         System.out.println(this.toString());
         System.out.println("Статус: " + this.getStatus());
@@ -121,21 +118,6 @@ public class Order extends Documents {
             System.out.println("Комментарий: " + comment);
         }
     }
-
-//    public static Order findByNumber(List ordersList) {
-//        Scanner sc = new Scanner(System.in);
-//        System.out.print("Номер заказа: ");
-//        int orderNumber = Useful.scanInt();
-//
-//        List conscripts = ordersList.stream()
-//                .filter(obj -> ((Order) obj).getNumber() == orderNumber)
-//                .toList();
-//        if (conscripts.size() == 0) {
-//            return null;
-//        }
-//
-//        return (Order) conscripts.get(0);
-//    }
 
     public static void addGoods(Order obj, Depo depo) {
         final String NUMBER_PALLET = "0123456789.";
@@ -225,7 +207,7 @@ public class Order extends Documents {
         }
 
         newOrder.setNewTrack("Создан заказ");
-        newOrder.printOrder();
+        newOrder.printObject();
         depo.ordersList.add(newOrder);
 
     }
@@ -247,7 +229,7 @@ public class Order extends Documents {
         int ch = Useful.scanInt();
         switch (ch) {
             case 1:
-                currentOrder.printOrder();
+                currentOrder.printObject();
                 break;
             case 2:
                 if (currentOrder.getStatus() == OrderStatus.IN_WORK || currentOrder.getStatus() == OrderStatus.NEW) {

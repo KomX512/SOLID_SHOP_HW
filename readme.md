@@ -13,7 +13,7 @@ https://github.com/KomX512/SOLID_SHOP_HW/blob/0ff11cf2adb3276a75c53b3a12b13bc456
 
 Классы созданы под свои функции (Single-responsibility principle)
 например класс Depo
-https://github.com/KomX512/SOLID_SHOP_HW/blob/0ff11cf2adb3276a75c53b3a12b13bc456df170c/src/main/java/Trade/Depo.java#L1C3-L1C4
+[https://github.com/KomX512/SOLID_SHOP_HW/blob/0ff11cf2adb3276a75c53b3a12b13bc456df170c/src/main/java/Trade/Depo.java#L1C3-L1C4](https://github.com/KomX512/SOLID_SHOP_HW/blob/0ff11cf2adb3276a75c53b3a12b13bc456df170c/src/main/java/Trade/Depo.java#L5)
 
 хранить листы со списком номенклатуры, списком заказов и рейтингом
 при передаче между методами облегчает ориентирование нужным спсикам объектов

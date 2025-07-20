@@ -43,7 +43,7 @@ public class Main {
                     Order.buildNewOrder(depo, null);
                     break;
                 case ORDER_BY_NUMBER:
-                    Order findedOrder = Order.findOrderByNumber(depo.ordersList);
+                    Order findedOrder = (Order) Order.findByNumber(depo.ordersList);
                     if (findedOrder != null) {
                         Order.orderOperations(findedOrder, depo);
                     }

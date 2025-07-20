@@ -55,6 +55,4 @@ public class Useful {
         String result = "0" + String.valueOf(source);
         return result.substring(result.length() - 2, result.length());
     }
-
-
 }

@@ -7,16 +7,16 @@ import java.util.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Order {
+public class Order extends Documents {
     private static final AtomicInteger COUNTER = new AtomicInteger(1);
-    protected int number;
-    protected Date date;
+//    protected int number;
+//    protected Date date;
     protected OrderStatus status;
     protected String address;
     protected float weigh;
     protected float summ;
     protected List orderGoods;
-    protected String comment;
+   // protected String comment;
     protected List orderTrack;
 
     public Order() {
@@ -31,9 +31,9 @@ public class Order {
         this.comment = "";
     }
 
-    public int getNumber() {
-        return number;
-    }
+//    public int getNumber() {
+//        return number;
+//    }
 
     public void setAddress(String address) {
         this.address = address;
@@ -122,20 +122,20 @@ public class Order {
         }
     }
 
-    public static Order findOrderByNumber(List ordersList) {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Номер заказа: ");
-        int orderNumber = Useful.scanInt();
-
-        List conscripts = ordersList.stream()
-                .filter(obj -> ((Order) obj).getNumber() == orderNumber)
-                .toList();
-        if (conscripts.size() == 0) {
-            return null;
-        }
-
-        return (Order) conscripts.get(0);
-    }
+//    public static Order findByNumber(List ordersList) {
+//        Scanner sc = new Scanner(System.in);
+//        System.out.print("Номер заказа: ");
+//        int orderNumber = Useful.scanInt();
+//
+//        List conscripts = ordersList.stream()
+//                .filter(obj -> ((Order) obj).getNumber() == orderNumber)
+//                .toList();
+//        if (conscripts.size() == 0) {
+//            return null;
+//        }
+//
+//        return (Order) conscripts.get(0);
+//    }
 
     public static void addGoods(Order obj, Depo depo) {
         final String NUMBER_PALLET = "0123456789.";
